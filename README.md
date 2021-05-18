@@ -4,7 +4,7 @@
 
 # Bitmoji for Developers documentation
 
-1. [Bitmoji Direct Auth](docs/DIRECT_AUTH_FOR_DEVELOPERS.md)
+1. [Bitmoji Direct Authorization](docs/DIRECT_AUTH_FOR_DEVELOPERS.md)
 1. [Bitmoji Direct - Standalone Stickers for Snap Kit](docs/stickers_snapkit.md)
 1. [Bitmoji Direct - Standalone Stickers for Bitmoji Direct API](docs/stickers_snapkit.md)
 1. [Bitmoji Direct Search - Vanilla JavaScript Search](docs/vanilla-sticker-picker/README.md)
