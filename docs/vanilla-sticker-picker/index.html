@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitmoji Picker</title>
+</head>
+
+<body>
+    <div id="app-container" style="display:grid; grid-template-columns: 50vw 50vw">
+        <div id="sticker-picker">
+            <form id="search-box" style="display:none; margin: 10px">
+                <input id="searchbox" />
+                <input type="submit" id="search-button" value="Search" />
+            </form>
+            <div id="tags"></div>
+            <div id="stickers"></div>
+        </div>
+        <div>
+            <img id="share-area" style="width: 100%"/>
+        </div>
+    </div>
+    <div id="my-login-button-target"></div>
+    <script>
+        window.snapKitInit = function () {
+            var loginButtonIconId = 'my-login-button-target';
+            // Mount Login Button
+            snap.loginkit.mountButton(loginButtonIconId, {
+                clientId: 'e527f8dd-73b2-460e-9373-5081da641aa1',
+                redirectURI: 'http://localhost:8000',
+                scopeList: [
+                    'user.display_name',
+                    'user.bitmoji.avatar',
+                    'user.external_id'
+                ],
+                handleResponseCallback: function () {
+                    snap.loginkit.fetchUserInfo().then(
+                        function (result) {
+                            const token = snap.loginkit.getSharedDataAccessToken();
+                            loadBitmojiContent(token);
+                        },
+                        function (err) {
+                            console.log(err); // Error
+                        }
+                    );
+                },
+            });
+        };
+        // Load the SDK asynchronously
+        (function (d, s, id) {
+            var js,
+                sjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "https://sdk.snapkit.com/js/v1/login.js";
+            sjs.parentNode.insertBefore(js, sjs);
+        })(document, "script", "loginkit-sdk");
+    </script>
+
+    <script>
+        const HOST = 'https://bitmoji.api.snapchat.com/api';
+
+        async function fetchFromAPI(url, token) {
+            const response = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const json = await response.json();
+            return json.data;
+        }
+
+        function getPackStickers(token, packId) {
+            return fetchFromAPI(`${HOST}/direct/pack/${packId}`, token);
+        }
+
+        function getStickerSearchResults(token, searchText) {
+            return fetchFromAPI(`${HOST}/direct/search?q=${searchText}`, token);
+        }
+
+        function getPacks(token) {
+            return fetchFromAPI(`${HOST}/direct/packs`, token);
+        }
+
+        function renderStickers(stickers) {
+            const stickerPicker = document.getElementById('stickers');
+            stickerPicker.innerHTML = '';
+            stickers.forEach(sticker => {
+                const image = new Image(100, 100);
+                image.src = sticker.uri;
+                image.onclick = () => shareSticker(sticker);
+                stickerPicker.appendChild(image);
+            });
+        }
+
+        function shareSticker(sticker) {
+            document.getElementById('share-area').src = sticker.uri.replace('size=thumbnail', 'size=default');
+            fetch(`${HOST}/direct/event/${sticker.on_share}`, { method: 'post' });
+        }
+
+        async function loadBitmojiContent(token) {
+            const stickers = await getPackStickers(token, 'popular');
+            renderStickers(stickers);
+
+            const searchBox = document.getElementById('search-box');
+            searchBox.style.display = 'block';
+
+            const searchButton = document.getElementById('search-button');
+            searchButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const searchText = document.getElementById('searchbox').value;
+                const searchResultStickers = await getStickerSearchResults(token, searchText);
+                renderStickers(searchResultStickers);
+            });
+
+            const packs = await getPacks(token);
+            const tagsContainer = document.getElementById('tags');
+            packs.forEach(pack => {
+                const packLink = document.createElement('a');
+                packLink.innerHTML = pack.name;
+                packLink.style.marginRight = '24px';
+                packLink.href = "#";
+                packLink.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const stickers = await getPackStickers(token, pack.id);
+                    renderStickers(stickers);
+                });
+                tagsContainer.appendChild(packLink);
+            });
+        }
+    </script>
+</body>
+
+</html>
