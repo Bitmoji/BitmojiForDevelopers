@@ -1,5 +1,5 @@
 <p align="center">
-<img src="images/bfd_logo_black.png">
+<img src="images/bfd_logo_green.png">
 </p>
 
 # Bitmoji for Developers documentation
