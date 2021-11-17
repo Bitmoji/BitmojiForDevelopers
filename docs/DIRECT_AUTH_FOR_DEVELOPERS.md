@@ -102,16 +102,20 @@ Payload Value | Description
 token | Either an access token or refresh token.
 
 ### Mobile
-When an iOS or Android mobile app initiates the connection flow the request will be handled by the Bitmoji app, if installed. Otherwise the request will be redirected to the App Store or Play Store to download Bitmoji.
+When an iOS or Android mobile app initiates the connection flow the request will be handled by the Bitmoji app, if installed. Otherwise the user will be asked to log into or sign up for Bitmoji through the browser.
 
-Conceptual flow,
+Bitmoji app flow:
+
 ![image](https://user-images.githubusercontent.com/31291049/109555125-242b2f80-7aa3-11eb-8fce-fc9990fde908.png)
 
 
 ### Desktop Web
-In a desktop web browser a scannable QR code will be shown. Users may scan the code with their phone cameras, then complete the connection flow in the Bitmoji app, if installed. If the app is not installed they will be redirected to the app store.
+In a desktop web browser, a user may log in or create an account via the web form or scan a QR code.
 
-Conceptual flow,
+If the user scans the code with their phone camera, then complete the connection flow in the Bitmoji app, if installed. If the app is not installed they will be redirected to the app store.
+
+QR Code flow:
+
 ![image](https://user-images.githubusercontent.com/31291049/109555088-1b3a5e00-7aa3-11eb-9e95-618d78b584d0.png)
 
 ### Limits
